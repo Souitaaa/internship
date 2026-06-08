@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+  
+}
+
+model Machine {
+  id          Int      @id @default(autoincrement())
+  uid         String   @unique
+  name        String
+  ip          String
+  zone        String
+  type        String
+  protocol    String
+  voltage     String
+  energy      Float    @default(0)
+  responsible String   @default("Unassigned")
+  tags        String
+  status      String   @default("Online")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

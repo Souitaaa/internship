@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "uid": "MT001",
+    "name": "Pump A1",
+    "ip": "172.16.1.20",
+    "zone": "Zone A",
+    "type": "Motor",
+    "protocol": "Modbus TCP",
+    "voltage": "400V",
+    "energy": 120,
+    "responsible": "Alice Johnson",
+    "tags": ["Pressure", "Temperature"],
+    "status": "Online",
+    "description": "Main water pump for cooling system."
+  },
+  {
+    "id": 2,
+    "uid": "MT002",
+    "name": "Conveyor Belt",
+    "ip": "172.16.1.21",
+    "zone": "Zone B",
+    "type": "Conveyor",
+    "protocol": "Profinet",
+    "voltage": "230V",
+    "energy": 210,
+    "responsible": "Bob Smith",
+    "tags": ["Speed", "Vibration"],
+    "status": "Online",
+    "description": "Assembly line conveyor."
+  },
+  {
+    "id": 3,
+    "uid": "MT003",
+    "name": "Compressor C1",
+    "ip": "172.16.2.15",
+    "zone": "Zone A",
+    "type": "Compressor",
+    "protocol": "EtherNet/IP",
+    "voltage": "400V",
+    "energy": 90,
+    "responsible": "Alice Johnson",
+    "tags": ["Air Pressure", "Flow Rate"],
+    "status": "Offline",
+    "description": "High pressure air compressor."
+  },
+  {
+    "id": 4,
+    "uid": "MT004",
+    "name": "Generator X",
+    "ip": "172.16.3.10",
+    "zone": "Zone C",
+    "type": "Generator",
+    "protocol": "Modbus TCP",
+    "voltage": "11kV",
+    "energy": 160,
+    "responsible": "Charlie Davis",
+    "tags": ["Power", "Fuel Level"],
+    "status": "Online",
+    "description": "Backup power generator."
+  }
+]
