@@ -7,10 +7,12 @@ export default function Machines() {
 
   return (
     <div className="space-y-6">
+      {/* Page Title Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">All Machines</h1>
-        <p className="text-gray-500 mt-2 text-lg">Complete list of registered industrial machines.</p>
+        <h1 className="text-3xl font-extrabold text-white tracking-tight">All Machines</h1>
+        <p className="text-slate-400 mt-2 text-sm font-semibold">Complete inventory of registered industrial equipment.</p>
       </div>
+
       <MachineTable machines={machines} />
     </div>
   );

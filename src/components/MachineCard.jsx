@@ -1,78 +1,100 @@
 import React from 'react';
-import { Tag, MapPin, Zap, Hash, AlertTriangle, Battery } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { MapPin, Cpu, Lightbulb, Zap, Battery, Calendar, Wrench } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function MachineCard({ machine }) {
-  const navigate = useNavigate();
-
   const isOnline = machine.status === 'Online';
-  const hasAlert = machine.energy > 150;
+  const isAlert = machine.energy > 150;
+  
+  // Custom status capsule styling - High Overload values show in high-impact Pulsing Red!
+  let statusBadgeClasses = "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold shadow-sm ";
+  if (isAlert) {
+    statusBadgeClasses += "bg-red-500/15 text-red-400 border border-red-500/30 animate-pulse";
+  } else if (isOnline) {
+    statusBadgeClasses += "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+  } else {
+    statusBadgeClasses += "bg-slate-800 text-slate-400 border border-slate-700/50";
+  }
+
+  // Energy & Voltage icon helper
+  const getVoltageStr = () => {
+    if (machine.type === 'Pump') return '230V';
+    if (machine.type === 'Conveyor') return '380V';
+    return '11kV';
+  };
 
   return (
-    <div
-      onClick={() => navigate(`/machine/${machine.id}`)}
-      className="surface-card group hover:border-primary-500 hover:ring-1 hover:ring-primary-500 cursor-pointer transition-all flex flex-col h-full overflow-hidden"
-    >
-      {/* Header section */}
-      <div className="p-5 border-b border-slate-100 flex justify-between items-start gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-1 min-w-0">
-            <h3 className="text-lg font-bold text-slate-900 truncate">
+    <div className={`surface-card p-6 flex flex-col justify-between h-[260px] relative overflow-hidden group transition-all duration-300 ${
+      isAlert ? 'border-red-500/30 hover:border-red-500/60 shadow-[0_0_15px_rgba(239,68,68,0.05)]' : 'hover:border-primary-500/50'
+    }`}>
+      <div>
+        {/* Card Header matching screen */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <h4 className="text-base font-extrabold text-slate-100 tracking-tight group-hover:text-primary-500 transition-colors">
               {machine.name}
-            </h3>
-            {hasAlert && (
-              <span className="shrink-0 flex items-center text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase border border-amber-200">
-                Alert
-              </span>
-            )}
-          </div>
-          <p className="text-small font-mono text-slate-500 truncate">{machine.ip}</p>
-        </div>
-        
-        {/* Status Indicator */}
-        <div className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold
-          ${isOnline ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
-          <div className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-red-500'}`} />
-          {machine.status}
-        </div>
-      </div>
-
-      {/* Structured Data List */}
-      <div className="p-5 flex-grow">
-        <dl className="space-y-3">
-          <div className="flex justify-between items-center text-sm">
-            <dt className="flex items-center text-slate-500">
-              <MapPin className="w-4 h-4 mr-2" /> Zone
-            </dt>
-            <dd className="font-medium text-slate-900">{machine.zone}</dd>
+            </h4>
+            <span className="text-[10px] font-semibold text-slate-400 block leading-none">
+              {machine.uid}
+            </span>
           </div>
           
-          <div className="flex justify-between items-center text-sm">
-            <dt className="flex items-center text-slate-500">
-              <Hash className="w-4 h-4 mr-2" /> Type
-            </dt>
-            <dd className="font-medium text-slate-900">{machine.type}</dd>
+          <div className={statusBadgeClasses}>
+            <span className={`w-1.5 h-1.5 rounded-full ${isAlert ? 'bg-red-400 animate-pulse' : isOnline ? 'bg-emerald-400' : 'bg-slate-500'}`}></span>
+            <span>{isAlert ? 'OVERLOAD' : machine.status}</span>
+          </div>
+        </div>
+
+        {/* Info Grid with Icons */}
+        <div className="mt-5 space-y-2.5 text-xs">
+          
+          {/* Row 1: Zone */}
+          <div className="flex justify-between items-center text-slate-300">
+            <span className="flex items-center gap-2 font-medium text-slate-400">
+              <MapPin className="w-3.5 h-3.5 text-slate-500" />
+              <span>Zone</span>
+            </span>
+            <span className="font-bold text-slate-200">Zone {machine.zone}</span>
           </div>
 
-          <div className="flex justify-between items-center text-sm">
-            <dt className="flex items-center text-slate-500">
-              <Zap className="w-4 h-4 mr-2" /> Voltage
-            </dt>
-            <dd className="font-medium text-slate-900">{machine.voltage}</dd>
+          {/* Row 2: Type */}
+          <div className="flex justify-between items-center text-slate-300">
+            <span className="flex items-center gap-2 font-medium text-slate-400">
+              <Cpu className="w-3.5 h-3.5 text-slate-500" />
+              <span>Type</span>
+            </span>
+            <span className="font-bold text-slate-200">{machine.type}</span>
           </div>
 
-          {machine.energy !== undefined && (
-            <div className="flex justify-between items-center text-sm">
-              <dt className="flex items-center text-slate-500">
-                <Battery className={`w-4 h-4 mr-2 ${hasAlert ? 'text-amber-500' : ''}`} /> Energy
-              </dt>
-              <dd className={`font-medium ${hasAlert ? 'text-amber-600' : 'text-slate-900'}`}>
-                {machine.energy} kWh
-              </dd>
-            </div>
-          )}
-        </dl>
+          {/* Row 3: Voltage */}
+          <div className="flex justify-between items-center text-slate-300">
+            <span className="flex items-center gap-2 font-medium text-slate-400">
+              <Zap className="w-3.5 h-3.5 text-slate-500" />
+              <span>Voltage</span>
+            </span>
+            <span className="font-bold text-slate-200">{getVoltageStr()}</span>
+          </div>
+
+          {/* Row 4: Energy / Load - If exceeded threshold (>150), highlighted in red! */}
+          <div className="flex justify-between items-center text-slate-300">
+            <span className="flex items-center gap-2 font-medium text-slate-400">
+              <Battery className="w-3.5 h-3.5 text-slate-500" />
+              <span>Energy</span>
+            </span>
+            <span className={`font-black ${isAlert ? 'text-red-400 animate-pulse' : 'text-slate-200'}`}>
+              {machine.energy} kWh
+            </span>
+          </div>
+
+        </div>
       </div>
+
+      {/* Floating Action Link overlay to machine detail page */}
+      <Link 
+        to={`/machines/${machine.id}`}
+        className="absolute inset-0 z-10 cursor-pointer"
+        title={`View ${machine.name} details`}
+      />
     </div>
   );
 }

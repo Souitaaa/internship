@@ -2,59 +2,119 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
+  /* Industrial Dark Emerald Theme */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-500: #10b981; /* Neon Emerald */
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
 
-  --color-surface: #ffffff;
-  --color-background: #f1f5f9; /* Slate 100 */
+  --color-surface: #161f30;
+  --color-background: #0b0f19;
   
-  --color-content-strong: #0f172a; /* Slate 900 */
-  --color-content-base: #475569;   /* Slate 600 */
-  --color-content-muted: #64748b;  /* Slate 500 */
+  --color-content-strong: #f8fafc;
+  --color-content-base: #94a3b8;
+  --color-content-muted: #64748b;
   
-  /* Semantic Status Colors */
-  --color-status-online: #059669; /* Emerald 600 */
-  --color-status-online-bg: #d1fae5; /* Emerald 100 */
-  --color-status-offline: #dc2626; /* Red 600 */
-  --color-status-offline-bg: #fee2e2; /* Red 100 */
-  --color-status-alert: #d97706; /* Amber 600 */
-  --color-status-alert-bg: #fef3c7; /* Amber 100 */
+  /* Semantic Status Colors for Dark UI */
+  --color-status-online: #10b981;
+  --color-status-online-bg: rgba(16, 185, 129, 0.15);
+  --color-status-offline: #f87171;
+  --color-status-offline-bg: rgba(248, 113, 113, 0.15);
+  --color-status-alert: #f59e0b;
+  --color-status-alert-bg: rgba(245, 158, 11, 0.15);
 
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-slate-100 text-slate-600 antialiased font-sans flex flex-col min-h-screen;
-    background-color: var(--color-background);
-    color: var(--color-content-base);
+    @apply antialiased font-sans flex flex-col min-h-screen text-slate-300;
+    background-color: #0b0f19;
+    /* Subtle carbon grid & corner aura lights in dark mode */
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 40%),
+      radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.02) 0px, transparent 35%),
+      linear-gradient(rgba(255, 255, 255, 0.003) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.003) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    color: #94a3b8;
   }
 
-  h1 { @apply text-[2rem] font-bold leading-tight tracking-tight text-slate-900; }
-  h2 { @apply text-2xl font-semibold leading-snug text-slate-900; }
-  h3 { @apply text-lg font-semibold leading-normal text-slate-900; }
-  h4 { @apply text-base font-medium leading-normal text-slate-800; }
-  .text-body { @apply text-sm leading-relaxed text-slate-600; }
-  .text-small { @apply text-xs leading-none text-slate-500; }
+  h1 { @apply text-[2rem] font-bold leading-tight tracking-tight text-white; }
+  h2 { @apply text-2xl font-semibold leading-snug text-white; }
+  h3 { @apply text-lg font-semibold leading-normal text-white; }
+  h4 { @apply text-base font-medium leading-normal text-slate-100; }
+  .text-body { @apply text-sm leading-relaxed text-slate-300; }
+  .text-small { @apply text-xs leading-none text-slate-400; }
 }
 
 @layer components {
-  /* Reusable strict container for page content */
   .layout-container {
     @apply w-full max-w-7xl mx-auto px-6 py-8;
   }
   
-  /* Elevating cards consistently */
+  /* Elevating cards consistently with green borders */
   .surface-card {
-    @apply bg-white rounded-xl shadow-sm ring-1 ring-slate-900/5;
+    @apply bg-[#161f30] rounded-2xl border border-[#232f48] shadow-lg hover:border-[#10b981]/50 transition-all duration-300;
   }
 
   /* Control strip input/select base */
   .control-input {
-    @apply h-10 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow;
+    @apply h-10 bg-[#161f30] border border-[#232f48] rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all;
   }
 }
 
+/* Custom glow pulse for critical alerts */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* Real-time data Update syncing rotating icon */
+@keyframes spin-sync {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-sync {
+  animation: spin-sync 4s linear infinite;
+}
+
+/* Glassmorphism custom classes */
+.glass-panel {
+  background: rgba(22, 31, 48, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+::-webkit-scrollbar-thumb {
+  background: #232f48;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}

@@ -34,7 +34,7 @@ export default function AddMachineModal({ isOpen, onClose }) {
     
     addNotification({
       type: 'Add',
-      message: `New machine added: ${newMachine.name} (${newMachine.uid})`,
+      message: `Added: ${newMachine.name}`,
       machine: newMachine,
       timestamp: new Date().toISOString()
     });
@@ -42,7 +42,7 @@ export default function AddMachineModal({ isOpen, onClose }) {
     if (newMachine.energy > 150) {
       addNotification({
         type: 'Energy',
-        message: `High energy alert! Machine ${newMachine.name} (${newMachine.uid}) is using ${newMachine.energy} kWh.`,
+        message: `Overload: ${newMachine.name} (${newMachine.energy} kWh)`,
         machine: newMachine,
         timestamp: new Date().toISOString()
       });
@@ -65,74 +65,77 @@ export default function AddMachineModal({ isOpen, onClose }) {
     onClose();
   };
 
+  const inputClasses = "w-full px-4 py-2 bg-[#1a243a] border border-[#232f48] text-white rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all text-sm";
+  const labelClasses = "block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5";
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-800">Add New Machine</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
-            <X className="w-6 h-6" />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#161f30] border border-[#232f48] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center p-6 border-b border-[#232f48]/50">
+          <h2 className="text-xl font-bold text-white">Add New Machine</h2>
+          <button onClick={onClose} className="p-2 hover:bg-[#1a243a] rounded-xl transition-all text-slate-400 hover:text-white border border-transparent hover:border-[#232f48]">
+            <X className="w-5 h-5" />
           </button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Machine Name</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Pump A1" />
+              <label className={labelClasses}>Machine Name</label>
+              <input required type="text" className={inputClasses} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Pump A1" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Internal ID (UID)</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.uid} onChange={e => setFormData({...formData, uid: e.target.value})} placeholder="e.g. MT005" />
+              <label className={labelClasses}>Internal ID (UID)</label>
+              <input required type="text" className={inputClasses} value={formData.uid} onChange={e => setFormData({...formData, uid: e.target.value})} placeholder="e.g. MT005" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.ip} onChange={e => setFormData({...formData, ip: e.target.value})} placeholder="192.168.1.100" />
+              <label className={labelClasses}>IP Address</label>
+              <input required type="text" className={inputClasses} value={formData.ip} onChange={e => setFormData({...formData, ip: e.target.value})} placeholder="192.168.1.100" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Zone</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.zone} onChange={e => setFormData({...formData, zone: e.target.value})} placeholder="Zone A" />
+              <label className={labelClasses}>Zone</label>
+              <input required type="text" className={inputClasses} value={formData.zone} onChange={e => setFormData({...formData, zone: e.target.value})} placeholder="Zone A" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} placeholder="e.g. Compressor" />
+              <label className={labelClasses}>Type</label>
+              <input required type="text" className={inputClasses} value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} placeholder="e.g. Compressor" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Protocol</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.protocol} onChange={e => setFormData({...formData, protocol: e.target.value})} placeholder="e.g. Modbus TCP" />
+              <label className={labelClasses}>Protocol</label>
+              <input required type="text" className={inputClasses} value={formData.protocol} onChange={e => setFormData({...formData, protocol: e.target.value})} placeholder="e.g. Modbus TCP" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Voltage</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.voltage} onChange={e => setFormData({...formData, voltage: e.target.value})} placeholder="e.g. 400V" />
+              <label className={labelClasses}>Voltage</label>
+              <input required type="text" className={inputClasses} value={formData.voltage} onChange={e => setFormData({...formData, voltage: e.target.value})} placeholder="e.g. 400V" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Energy (kWh)</label>
-              <input required type="number" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.energy} onChange={e => setFormData({...formData, energy: e.target.value})} />
+              <label className={labelClasses}>Energy (kWh)</label>
+              <input required type="number" className={inputClasses} value={formData.energy} onChange={e => setFormData({...formData, energy: e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Responsible</label>
-              <input required type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.responsible} onChange={e => setFormData({...formData, responsible: e.target.value})} placeholder="e.g. John Doe" />
+              <label className={labelClasses}>Responsible</label>
+              <input required type="text" className={inputClasses} value={formData.responsible} onChange={e => setFormData({...formData, responsible: e.target.value})} placeholder="e.g. John Doe" />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tags (Comma-separated)</label>
-              <input type="text" className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} placeholder="e.g. Critical, Maintenance" />
+              <label className={labelClasses}>Tags (Comma-separated)</label>
+              <input type="text" className={inputClasses} value={formData.tags} onChange={e => setFormData({...formData, tags: e.target.value})} placeholder="e.g. Critical, Maintenance" />
             </div>
             <div className="md:col-span-2">
-               <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-               <select className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+               <label className={labelClasses}>Status</label>
+               <select className={inputClasses} value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
                  <option value="Online">Online</option>
                  <option value="Offline">Offline</option>
                </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all resize-none h-24" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Description details..." />
+              <label className={labelClasses}>Description</label>
+              <textarea className={`${inputClasses} resize-none h-24`} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Description details..." />
             </div>
           </div>
           
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-6 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">Cancel</button>
-            <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">Add Machine</button>
+          <div className="flex justify-end space-x-3 pt-5 border-t border-[#232f48]/50">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 bg-[#1a243a] hover:bg-[#232f48] text-slate-300 hover:text-white border border-[#232f48] rounded-xl transition-all font-semibold text-sm cursor-pointer">Cancel</button>
+            <button type="submit" className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all shadow-[0_0_12px_rgba(37,99,235,0.2)] font-semibold text-sm cursor-pointer">Add Machine</button>
           </div>
         </form>
       </div>

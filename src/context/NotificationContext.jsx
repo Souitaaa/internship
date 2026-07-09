@@ -8,7 +8,12 @@ export function NotificationProvider({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    // Optimized Socket options to prevent endless polling background threads when offline
+    const socket = io('http://localhost:3000', {
+      reconnectionAttempts: 5,
+      timeout: 10000,
+      transports: ['websocket', 'polling']
+    });
 
     socket.on('energyAlert', (data) => {
       setNotifications(prev => [{...data, read: false, id: Date.now()}, ...prev]);
@@ -33,7 +38,7 @@ export function NotificationProvider({ children }) {
   };
 
   const addNotification = (data) => {
-    setNotifications(prev => [{ ...data, read: false, id: Date.now() + Math.random() }, ...prev]);
+    setNotifications(prev => [{ ...data, read: false, id: data.id || (Date.now() + Math.random()) }, ...prev]);
     setUnreadCount(prev => prev + 1);
   };
 

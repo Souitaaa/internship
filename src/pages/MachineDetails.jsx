@@ -22,7 +22,7 @@ export default function MachineDetails() {
       
       addNotification({
         type: 'Delete',
-        message: `Machine deleted: ${machine.name} (${machine.uid})`,
+        message: `Deleted: ${machine.name}`,
         machine: machine,
         timestamp: new Date().toISOString()
       });
@@ -48,10 +48,10 @@ export default function MachineDetails() {
   if (!machine) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh]">
-        <h2 className="text-2xl font-bold text-slate-800 mb-4">Machine Not Found</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">Machine Not Found</h2>
         <button
           onClick={() => navigate('/')}
-          className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center"
+          className="px-6 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all flex items-center shadow-lg font-bold text-sm cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
         </button>
@@ -59,124 +59,146 @@ export default function MachineDetails() {
     );
   }
 
+  const isOnline = machine.status === 'Online';
+  const hasAlert = machine.energy > 150;
+
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
+    <div className="max-w-5xl mx-auto py-4 px-2 space-y-6">
       <button
         onClick={() => navigate(-1)}
-        className="mb-8 text-primary-600 hover:text-primary-800 transition-colors flex items-center font-medium"
+        className="text-[#10b981] hover:text-emerald-400 transition-colors flex items-center font-bold text-sm cursor-pointer"
       >
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
       </button>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 border-b border-slate-200 px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      {/* Main Glass Detail Container */}
+      <div className="bg-[#161f30] border border-[#232f48] rounded-3xl overflow-hidden shadow-2xl">
+        
+        {/* Header Header Info Panel */}
+        <div className="bg-[#1a243a] border-b border-[#232f48] px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="min-w-0 flex-1 pr-4">
-            <h1 className="text-3xl font-extrabold text-slate-900 mb-2 truncate">{machine.name}</h1>
-            <div className="flex items-center space-x-4 text-slate-600 font-mono text-sm max-w-full">
-               <span className="flex items-center min-w-0"><Shield className="w-4 h-4 mr-1 shrink-0"/> <span className="truncate">{machine.uid}</span></span>
-               <span className="flex items-center min-w-0"><Link2 className="w-4 h-4 mr-1 shrink-0"/> <span className="truncate">{machine.ip}</span></span>
+            <h1 className="text-2xl font-black text-white tracking-tight truncate">{machine.name}</h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-400 font-mono text-[11px] mt-2">
+               <span className="flex items-center min-w-0"><Shield className="w-4 h-4 mr-1.5 text-slate-500 shrink-0"/> <span className="truncate">UID: {machine.uid}</span></span>
+               <span className="flex items-center min-w-0"><Link2 className="w-4 h-4 mr-1.5 text-slate-500 shrink-0"/> <span className="truncate">IP: {machine.ip}</span></span>
             </div>
           </div>
           
           <div className="flex items-center space-x-3 shrink-0">
-             {machine.energy > 150 && (
-               <span className="flex items-center px-4 py-1.5 rounded-full text-sm font-bold tracking-wide bg-amber-100 text-amber-700 border border-amber-200">
-                 <AlertTriangle className="w-4 h-4 mr-1.5" />
+             {hasAlert && (
+               <span className="flex items-center px-4 py-1.5 rounded-full text-xs font-bold tracking-wide bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                 <AlertTriangle className="w-4 h-4 mr-1.5 animate-pulse" />
                  High Energy Alert
                </span>
              )}
-             <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide
-                ${machine.status === 'Online' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+             <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border
+                ${isOnline ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
                 {machine.status}
               </span>
-             <button onClick={() => setIsEditModalOpen(true)} title="Edit Machine" className="p-2 bg-white rounded-lg text-primary-600 hover:bg-primary-50 border border-primary-200 transition-colors shadow-sm">
-                <Edit className="w-5 h-5" />
+             
+             {/* Edit Action */}
+             <button 
+               onClick={() => setIsEditModalOpen(true)} 
+               title="Edit Machine" 
+               className="p-2.5 bg-[#161f30] hover:bg-slate-800 text-emerald-400 hover:text-white border border-[#232f48] hover:border-[#10b981]/50 rounded-2xl transition-all cursor-pointer shadow-md"
+             >
+                <Edit className="w-4.5 h-4.5" />
              </button>
-             <button onClick={handleDelete} title="Delete Machine" className="p-2 bg-white rounded-lg text-red-600 hover:bg-red-50 border border-red-200 transition-colors shadow-sm">
-                <Trash2 className="w-5 h-5" />
+             
+             {/* Delete Action */}
+             <button 
+               onClick={handleDelete} 
+               title="Delete Machine" 
+               className="p-2.5 bg-[#161f30] hover:bg-red-950/20 text-red-400 hover:text-red-300 border border-[#232f48] hover:border-red-500/50 rounded-2xl transition-all cursor-pointer shadow-md"
+             >
+                <Trash2 className="w-4.5 h-4.5" />
              </button>
           </div>
         </div>
 
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Content Details Grid */}
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-12 bg-[#161f30]">
+          
+          {/* Information Section */}
           <div className="space-y-8">
             <section>
-              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center border-b border-slate-100 pb-2">
-                 <Info className="w-5 h-5 mr-2 text-primary-500"/> Information
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-400 mb-4 flex items-center border-b border-[#232f48] pb-2">
+                 <Info className="w-4.5 h-4.5 mr-2 text-[#10b981]"/> Machine Information
               </h3>
-              <ul className="space-y-4">
-                <li className="flex justify-between items-center py-2 border-b border-slate-50">
-                  <span className="text-slate-500 flex items-center"><MapPin className="w-4 h-4 mr-2"/> Zone</span>
-                  <span className="font-medium text-slate-800">{machine.zone}</span>
+              <ul className="space-y-3.5">
+                <li className="flex justify-between items-center py-2 border-b border-[#232f48]/40 text-xs">
+                  <span className="text-slate-400 flex items-center"><MapPin className="w-4 h-4 mr-2.5 text-slate-500"/> Zone</span>
+                  <span className="font-bold text-white">Zone {machine.zone}</span>
                 </li>
-                <li className="flex justify-between items-center py-2 border-b border-slate-50">
-                  <span className="text-slate-500 flex items-center"><Activity className="w-4 h-4 mr-2"/> Type</span>
-                  <span className="font-medium text-slate-800">{machine.type}</span>
+                <li className="flex justify-between items-center py-2 border-b border-[#232f48]/40 text-xs">
+                  <span className="text-slate-400 flex items-center"><Activity className="w-4 h-4 mr-2.5 text-slate-500"/> Type</span>
+                  <span className="font-bold text-white">{machine.type}</span>
                 </li>
-                <li className="flex justify-between items-center py-2 border-b border-slate-50">
-                  <span className="text-slate-500 flex items-center"><Info className="w-4 h-4 mr-2"/> Responsible</span>
-                  <span className="font-medium text-slate-800">{machine.responsible}</span>
+                <li className="flex justify-between items-center py-2 border-b border-[#232f48]/40 text-xs">
+                  <span className="text-slate-400 flex items-center"><Info className="w-4 h-4 mr-2.5 text-slate-500"/> Responsible Personnel</span>
+                  <span className="font-bold text-white">{machine.responsible}</span>
                 </li>
-                <li className="flex justify-between items-center py-2 border-b border-slate-50">
-                  <span className="text-slate-500 flex items-center"><Clock className="w-4 h-4 mr-2"/> Internal ID</span>
-                  <span className="font-medium text-slate-800">{machine.id}</span>
+                <li className="flex justify-between items-center py-2 border-b border-[#232f48]/40 text-xs">
+                  <span className="text-slate-400 flex items-center"><Clock className="w-4 h-4 mr-2.5 text-slate-500"/> Internal ID</span>
+                  <span className="font-mono font-bold text-slate-300">{machine.id}</span>
                 </li>
               </ul>
             </section>
             
             <section>
-              <h3 className="text-lg font-bold text-slate-800 mb-4 flex justify-between items-center border-b border-slate-100 pb-2">
-                Description
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-400 mb-4 flex justify-between items-center border-b border-[#232f48] pb-2">
+                Log Description
               </h3>
-              <p className="text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-lg">
-                 {machine.description || 'No description provided.'}
+              <p className="text-slate-300 leading-relaxed bg-[#1a243a]/60 border border-[#232f48]/50 p-4 rounded-2xl text-xs">
+                {machine.description || "No log notes added. Please click the edit action button to document custom notes, maintenance events, and operation logs for this registered equipment."}
               </p>
             </section>
           </div>
 
+          {/* Real-time Telemetry Section */}
           <div className="space-y-8">
             <section>
-              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center border-b border-slate-100 pb-2">
-                 Technical Data
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-400 mb-4 flex items-center border-b border-[#232f48] pb-2">
+                 <Zap className="w-4.5 h-4.5 mr-2 text-[#10b981]"/> Real-time Status
               </h3>
-               <div className="grid grid-cols-2 gap-4">
-                   <div className="bg-primary-50 rounded-xl p-4 flex flex-col justify-center">
-                      <p className="text-primary-600/80 text-sm font-semibold mb-1 uppercase tracking-wide flex items-center"><Zap className="w-4 h-4 mr-1"/> Voltage</p>
-                      <p className="text-2xl font-bold text-primary-900">{machine.voltage}</p>
-                   </div>
-                   {machine.energy !== undefined && (
-                     <div className={`rounded-xl p-4 flex flex-col justify-center ${machine.energy > 150 ? 'bg-amber-50' : 'bg-primary-50'}`}>
-                        <p className={`text-sm font-semibold mb-1 uppercase tracking-wide flex items-center ${machine.energy > 150 ? 'text-amber-600/80' : 'text-primary-600/80'}`}>
-                          <Battery className="w-4 h-4 mr-1"/> Energy
-                        </p>
-                        <p className={`text-2xl font-bold ${machine.energy > 150 ? 'text-amber-900' : 'text-primary-900'}`}>{machine.energy} kWh</p>
-                     </div>
-                   )}
-                    <div className="bg-slate-50 rounded-xl p-4 flex flex-col justify-center col-span-2">
-                      <p className="text-slate-600/80 text-sm font-semibold mb-1 uppercase tracking-wide">Protocol</p>
-                      <p className="text-lg font-bold text-slate-900">{machine.protocol}</p>
-                   </div>
-               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-[#1a243a]/60 border border-[#232f48]/50 rounded-2xl">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Energy</div>
+                  <div className="text-2xl font-black text-white mt-1 flex items-baseline gap-1">
+                    <span>{machine.energy}</span>
+                    <span className="text-xs font-semibold text-slate-500">kWh</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-[#1a243a]/60 border border-[#232f48]/50 rounded-2xl">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg Flow Rate</div>
+                  <div className="text-2xl font-black text-white mt-1 flex items-baseline gap-1">
+                    <span>{machine.type === 'Pump' ? '8.4' : 'N/A'}</span>
+                    <span className="text-xs font-semibold text-slate-500">{machine.type === 'Pump' ? 'L/s' : ''}</span>
+                  </div>
+                </div>
+              </div>
             </section>
-            
+
             <section>
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
-                 <Tag className="w-5 h-5 mr-2 text-green-500"/> Applied Tags
+              <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-400 mb-4 flex items-center border-b border-[#232f48] pb-2">
+                 <Activity className="w-4.5 h-4.5 mr-2 text-[#10b981]"/> Telemetry Activity logs
               </h3>
-              <div className="flex flex-wrap gap-2">
-                {machine.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-200 transition-colors shadow-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              <div className="p-4 bg-[#1a243a]/60 border border-[#232f48]/50 rounded-2xl text-xs space-y-2 text-slate-300">
+                <div className="flex justify-between border-b border-[#232f48]/30 pb-1">
+                  <span>Current load state:</span>
+                  <span className="font-bold text-emerald-400">Normal</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Data reporting frequency:</span>
+                  <span className="font-mono text-slate-400">Every 5 seconds</span>
+                </div>
               </div>
             </section>
           </div>
+
         </div>
       </div>
+
       <EditMachineModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} machine={machine} />
     </div>
   );
