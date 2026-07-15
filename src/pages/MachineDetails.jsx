@@ -19,28 +19,6 @@ export default function MachineDetails() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this machine?")) {
       deleteMachine(machine.id);
-      
-      addNotification({
-        type: 'Delete',
-        message: `Deleted: ${machine.name}`,
-        machine: machine,
-        timestamp: new Date().toISOString()
-      });
-
-      try {
-        await fetch(`http://localhost:3000/machines/event`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'Delete',
-            message: `Machine deleted: ${machine.name} (${machine.uid})`,
-            machine: machine
-          })
-        });
-      } catch (err) {
-        console.error("Backend unreachable for notification", err);
-      }
-      
       navigate('/');
     }
   };
@@ -166,14 +144,30 @@ export default function MachineDetails() {
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Operational Energy</div>
                   <div className="text-2xl font-black text-white mt-1 flex items-baseline gap-1">
                     <span>{machine.energy}</span>
-                    <span className="text-xs font-semibold text-slate-500">kWh</span>
+                    <span className="text-xs font-semibold text-slate-500">kWh/h</span>
                   </div>
                 </div>
                 <div className="p-4 bg-[#1a243a]/60 border border-[#232f48]/50 rounded-2xl">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Avg Flow Rate</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Consumed Energy</div>
                   <div className="text-2xl font-black text-white mt-1 flex items-baseline gap-1">
-                    <span>{machine.type === 'Pump' ? '8.4' : 'N/A'}</span>
-                    <span className="text-xs font-semibold text-slate-500">{machine.type === 'Pump' ? 'L/s' : ''}</span>
+                    <span>{machine.totalEnergyConsumed || (machine.energy * 10)}</span>
+                    <span className="text-xs font-semibold text-slate-500">kWh</span>
+                  </div>
+                </div>
+                <div className="p-4 bg-[#1a243a]/60 border border-[#232f48]/50 rounded-2xl col-span-2">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Temps Restant pour Réparation</div>
+                  <div className="text-lg font-bold text-white mt-1 flex items-center gap-1.5">
+                    {machine.status === 'Offline' ? (
+                      <span className="text-amber-400 flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 animate-pulse" />
+                        {machine.reparationTime || '1h 30m'}
+                      </span>
+                    ) : (
+                      <span className="text-emerald-400 flex items-center gap-1.5">
+                        <Shield className="w-4 h-4 text-emerald-500" />
+                        Aucune réparation requise
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

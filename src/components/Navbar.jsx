@@ -12,24 +12,41 @@ export default function Navbar() {
   // Manage expandable search bar state
   const [searchExpanded, setSearchExpanded] = useState(false);
 
-  // Memoized notifications to prevent redundant allocations and provide premium default fallback notifications
+  // Manage fallback notifications dismissal locally
+  const [dismissedLocalIds, setDismissedLocalIds] = useState([]);
+
+  // Memoized notifications with local dismissal support
   const displayNotifications = useMemo(() => {
-    return notifications && notifications.length > 0 
+    const list = notifications && notifications.length > 0 
       ? notifications 
       : [
           { id: 'def-1', text: "⚠️ Overload: Pump Beta (155 kWh)", time: "2 min ago", type: "Energy" },
           { id: 'def-2', text: "Added: Conveyor Line A", time: "10 min ago", type: "Add" }
         ];
-  }, [notifications]);
+    return list.filter(notif => !dismissedLocalIds.includes(notif.id));
+  }, [notifications, dismissedLocalIds]);
+
+  const handleDismissNotif = (e, notifId) => {
+    e.stopPropagation();
+    // If it exists in state, call context's remove, otherwise dismiss locally
+    if (notifications && notifications.some(n => n.id === notifId)) {
+      if (removeNotification) {
+        removeNotification(notifId);
+      }
+    } else {
+      setDismissedLocalIds(prev => [...prev, notifId]);
+    }
+  };
 
   const clearAllNotifs = (e) => {
     e.stopPropagation();
-    // Dismiss all active notifications from roster
+    // Dismiss all active and fallback notifications
     if (notifications && notifications.length > 0) {
       notifications.forEach(notif => {
         if (removeNotification) removeNotification(notif.id);
       });
     }
+    setDismissedLocalIds(['def-1', 'def-2']);
     setNotifDropdownOpen(false);
   };
 
@@ -114,7 +131,8 @@ export default function Navbar() {
             className="p-2.5 text-slate-400 hover:text-white hover:bg-[#161f30] rounded-xl transition-all cursor-pointer relative"
           >
             <Bell className="w-4.5 h-4.5" />
-            {(unreadCount > 0 || displayNotifications.length > 0) && (
+            {/* FIX: Red dot indicator ONLY pulses if there are actual unread alerts! */}
+            {unreadCount > 0 && (
               <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
             )}
           </button>
@@ -164,26 +182,23 @@ export default function Navbar() {
                     return (
                       <div 
                         key={notif.id} 
-                        onClick={() => {
-                          if (removeNotification) removeNotification(notif.id);
-                        }}
+                        onClick={(e) => handleDismissNotif(e, notif.id)}
                         title="Click to dismiss"
-                        className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-all duration-200 cursor-pointer hover:bg-slate-800/40 relative group ${style.bg} ${notif.read ? 'opacity-55' : ''}`}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all duration-200 cursor-pointer hover:bg-slate-800/40 relative group ${style.bg} ${notif.read ? 'opacity-55' : ''}`}
                       >
-                        <div className="shrink-0">{style.icon}</div>
-                        <div className="space-y-0.5 min-w-0 flex-1 pr-4">
-                          <p className="text-xs font-semibold leading-normal truncate">{text}</p>
-                          <p className="text-[8px] text-slate-500 font-bold tracking-wide">
-                            {notif.time || notif.timestamp ? new Date(notif.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now'}
-                          </p>
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="shrink-0">{style.icon}</div>
+                          <div className="space-y-0.5 min-w-0 pr-1">
+                            <p className="text-xs font-semibold leading-normal truncate">{text}</p>
+                            <p className="text-[8px] text-slate-500 font-bold tracking-wide">
+                              {notif.time || notif.timestamp ? new Date(notif.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now'}
+                            </p>
+                          </div>
                         </div>
                         
-                        {/* Read one notif close/check trigger */}
+                        {/* Read one notif close/check trigger (Works for both live and fallback alerts!) */}
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (removeNotification) removeNotification(notif.id);
-                          }}
+                          onClick={(e) => handleDismissNotif(e, notif.id)}
                           className="p-1 text-slate-500 hover:text-white rounded hover:bg-white/10 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Dismiss notification"
                         >

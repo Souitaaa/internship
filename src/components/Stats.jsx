@@ -22,12 +22,6 @@ export default function Stats({ machines, onStatClick }) {
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Assets</span>
             <div className="text-3xl font-extrabold text-white tracking-tight mt-1">{total}</div>
           </div>
-          <span className="flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
-            </svg>
-            <span>5% this month</span>
-          </span>
         </div>
         <div className="text-[10px] text-slate-500">
           <span>Active inventory</span>
@@ -44,13 +38,12 @@ export default function Stats({ machines, onStatClick }) {
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Operational</span>
             <div className="text-3xl font-extrabold text-white tracking-tight mt-1">{online}</div>
           </div>
-          <div className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full">
+          <div className="p-1.5 bg-emerald-500/10 border border-[#10b981]/25 text-[#10b981] rounded-full">
             <CheckCircle className="w-4 h-4" />
           </div>
         </div>
         <div className="flex justify-between items-center text-[10px] text-slate-500">
           <span>Utilization</span>
-          <span className="text-emerald-400 font-bold">94% Uptime</span>
         </div>
       </div>
 
@@ -92,7 +85,7 @@ export default function Stats({ machines, onStatClick }) {
         <div className="flex items-start justify-between relative z-10">
           <div className="space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-red-400/80">Critical Alerts</span>
-            <div className="text-3xl font-extrabold text-white tracking-tight mt-1">{alerts > 0 ? alerts : 1}</div>
+            <div className="text-3xl font-extrabold text-white tracking-tight mt-1">{alerts}</div>
           </div>
           
           <div className="p-2 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl animate-pulse-glow">
@@ -101,9 +94,11 @@ export default function Stats({ machines, onStatClick }) {
         </div>
 
         <div className="border-t border-red-900/30 pt-1.5 relative z-10">
-          <p className="text-[9px] text-red-400 font-bold uppercase tracking-wide leading-none">High Energy:</p>
+          <p className="text-[9px] text-red-400 font-bold uppercase tracking-wide leading-none">
+            {alerts > 0 ? 'High Energy:' : 'Status:'}
+          </p>
           <p className="text-xs font-bold text-white mt-1 truncate uppercase">
-            {criticalMachine.name}
+            {alerts > 0 ? criticalMachine.name : 'System Stable'}
           </p>
         </div>
       </div>

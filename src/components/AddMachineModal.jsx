@@ -15,6 +15,8 @@ export default function AddMachineModal({ isOpen, onClose }) {
     protocol: 'Modbus TCP',
     voltage: '400V',
     energy: 100,
+    totalEnergyConsumed: 1000,
+    reparationTime: '0h',
     responsible: '',
     tags: '',
     status: 'Online',
@@ -28,40 +30,10 @@ export default function AddMachineModal({ isOpen, onClose }) {
     const newMachine = {
       ...formData,
       energy: Number(formData.energy),
+      totalEnergyConsumed: Number(formData.totalEnergyConsumed),
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
     };
     addMachine(newMachine);
-    
-    addNotification({
-      type: 'Add',
-      message: `Added: ${newMachine.name}`,
-      machine: newMachine,
-      timestamp: new Date().toISOString()
-    });
-
-    if (newMachine.energy > 150) {
-      addNotification({
-        type: 'Energy',
-        message: `Overload: ${newMachine.name} (${newMachine.energy} kWh)`,
-        machine: newMachine,
-        timestamp: new Date().toISOString()
-      });
-    }
-
-    try {
-      await fetch(`http://localhost:3000/machines/event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'Add',
-          message: `New machine added: ${newMachine.name} (${newMachine.uid})`,
-          machine: newMachine
-        })
-      });
-    } catch (err) {
-      console.error("Backend unreachable for notification", err);
-    }
-    
     onClose();
   };
 
@@ -109,8 +81,16 @@ export default function AddMachineModal({ isOpen, onClose }) {
               <input required type="text" className={inputClasses} value={formData.voltage} onChange={e => setFormData({...formData, voltage: e.target.value})} placeholder="e.g. 400V" />
             </div>
             <div>
-              <label className={labelClasses}>Energy (kWh)</label>
+              <label className={labelClasses}>Operational Energy (kWh)</label>
               <input required type="number" className={inputClasses} value={formData.energy} onChange={e => setFormData({...formData, energy: e.target.value})} />
+            </div>
+            <div>
+              <label className={labelClasses}>Total Energy Consumed (kWh)</label>
+              <input required type="number" className={inputClasses} value={formData.totalEnergyConsumed} onChange={e => setFormData({...formData, totalEnergyConsumed: e.target.value})} />
+            </div>
+            <div>
+              <label className={labelClasses}>Reparation Time Left (e.g. 2h 15m, 0h if Online)</label>
+              <input required type="text" className={inputClasses} value={formData.reparationTime} onChange={e => setFormData({...formData, reparationTime: e.target.value})} placeholder="e.g. 0h" />
             </div>
             <div>
               <label className={labelClasses}>Responsible</label>

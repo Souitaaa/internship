@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { NotificationsGateway } from './notifications.gateway';
 
@@ -9,11 +9,37 @@ export class AppController {
     private readonly notificationsGateway: NotificationsGateway
   ) {}
 
+  @Get()
+  getAllMachines() {
+    return this.appService.getAllMachines();
+  }
+
+  @Get(':id')
+  getMachineById(@Param('id') id: string) {
+    return this.appService.getMachineById(Number(id));
+  }
+
+  @Post()
+  createMachine(@Body() body: any) {
+    return this.appService.createMachine(body);
+  }
+
+  @Put(':id')
+  updateMachine(@Param('id') id: string, @Body() body: any) {
+    return this.appService.updateMachine(Number(id), body);
+  }
+
+  @Delete(':id')
+  deleteMachine(@Param('id') id: string) {
+    return this.appService.deleteMachine(Number(id));
+  }
+
+  // Fallback endpoint for retrocompatibility / legacy energy telemetry inputs
   @Post(':id/energy')
-  updateEnergy(@Param('id') id: string, @Body() body: { energy: number, name: string, uid: string }) {
+  updateEnergy(@Param('id') id: string, @Body() body: { energy: number; name: string; uid: string }) {
     if (body.energy > 150) {
       this.notificationsGateway.sendHighEnergyAlert({
-        id,
+        id: Number(id),
         name: body.name,
         uid: body.uid,
         energy: body.energy,
@@ -22,10 +48,10 @@ export class AppController {
     return { success: true };
   }
 
+  // Fallback endpoint for legacy front-end custom notifications
   @Post('event')
-  handleMachineEvent(@Body() body: { type: string, message: string, machine?: any }) {
+  handleMachineEvent(@Body() body: { type: string; message: string; machine?: any }) {
     this.notificationsGateway.sendNotification(body);
-    // Additionally, if it's an add/edit event, check energy limit as well
     if ((body.type === 'Add' || body.type === 'Edit') && body.machine && body.machine.energy > 150) {
       this.notificationsGateway.sendHighEnergyAlert(body.machine);
     }

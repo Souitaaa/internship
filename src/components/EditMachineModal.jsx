@@ -24,39 +24,11 @@ export default function EditMachineModal({ isOpen, onClose, machine }) {
     const updatedMachine = {
       ...formData,
       energy: Number(formData.energy),
+      totalEnergyConsumed: Number(formData.totalEnergyConsumed || 0),
+      reparationTime: formData.reparationTime || '0h',
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
     };
     editMachine(updatedMachine);
-    
-    addNotification({
-      type: 'Edit',
-      message: `Updated: ${updatedMachine.name}`,
-      machine: updatedMachine,
-      timestamp: new Date().toISOString()
-    });
-
-    if (updatedMachine.energy > 150) {
-      addNotification({
-        type: 'Energy',
-        message: `Overload: ${updatedMachine.name} (${updatedMachine.energy} kWh)`,
-        machine: updatedMachine,
-        timestamp: new Date().toISOString()
-      });
-    }
-
-    try {
-      await fetch(`http://localhost:3000/machines/event`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'Edit',
-          message: `Machine updated: ${updatedMachine.name} (${updatedMachine.uid})`,
-          machine: updatedMachine
-        })
-      });
-    } catch (err) {
-      console.error("Backend unreachable for notification", err);
-    }
     onClose();
   };
 
@@ -104,8 +76,16 @@ export default function EditMachineModal({ isOpen, onClose, machine }) {
               <input required type="text" className={inputClasses} value={formData.voltage || ''} onChange={e => setFormData({...formData, voltage: e.target.value})} />
             </div>
             <div>
-              <label className={labelClasses}>Energy (kWh)</label>
+              <label className={labelClasses}>Operational Energy (kWh)</label>
               <input required type="number" className={inputClasses} value={formData.energy || ''} onChange={e => setFormData({...formData, energy: e.target.value})} />
+            </div>
+            <div>
+              <label className={labelClasses}>Total Energy Consumed (kWh)</label>
+              <input required type="number" className={inputClasses} value={formData.totalEnergyConsumed || ''} onChange={e => setFormData({...formData, totalEnergyConsumed: e.target.value})} />
+            </div>
+            <div>
+              <label className={labelClasses}>Reparation Time Left (e.g. 2h 15m, 0h if Online)</label>
+              <input required type="text" className={inputClasses} value={formData.reparationTime || ''} onChange={e => setFormData({...formData, reparationTime: e.target.value})} />
             </div>
             <div>
               <label className={labelClasses}>Responsible</label>
