@@ -5,7 +5,7 @@ import { Bell, Search, LogOut, Settings, User, PlusCircle, PenTool, Trash2, Aler
 
 export default function Navbar() {
   const { searchTerm, setSearchTerm } = useMachines();
-  const { notifications, markAllAsRead, removeNotification, unreadCount } = useNotifications();
+  const { notifications, markAllAsRead, markAsRead, removeNotification, unreadCount } = useNotifications();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   
@@ -182,14 +182,21 @@ export default function Navbar() {
                     return (
                       <div 
                         key={notif.id} 
-                        onClick={(e) => handleDismissNotif(e, notif.id)}
-                        title="Click to dismiss"
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all duration-200 cursor-pointer hover:bg-slate-800/40 relative group ${style.bg} ${notif.read ? 'opacity-55' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (notifications && notifications.some(n => n.id === notif.id)) {
+                            markAsRead && markAsRead(notif.id);
+                          } else {
+                            setDismissedLocalIds(prev => [...prev, notif.id]);
+                          }
+                        }}
+                        title="Click to mark as read"
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 transition-all duration-200 cursor-pointer hover:bg-slate-800/40 relative group ${style.bg} ${notif.read ? 'opacity-55 font-normal' : 'font-semibold'}`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <div className="shrink-0">{style.icon}</div>
                           <div className="space-y-0.5 min-w-0 pr-1">
-                            <p className="text-xs font-semibold leading-normal truncate">{text}</p>
+                            <p className="text-xs leading-normal truncate">{text}</p>
                             <p className="text-[8px] text-slate-500 font-bold tracking-wide">
                               {notif.time || notif.timestamp ? new Date(notif.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now'}
                             </p>

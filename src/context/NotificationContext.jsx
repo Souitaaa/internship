@@ -5,7 +5,6 @@ const NotificationContext = createContext();
 
 export function NotificationProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     // Optimized Socket options to prevent endless polling background threads when offline
@@ -16,21 +15,25 @@ export function NotificationProvider({ children }) {
     });
 
     socket.on('energyAlert', (data) => {
-      setNotifications(prev => [{...data, read: false, id: Date.now()}, ...prev]);
-      setUnreadCount(prev => prev + 1);
+      setNotifications(prev => [{...data, read: false, id: Date.now() + Math.random()}, ...prev]);
     });
     
     socket.on('appNotification', (data) => {
-      setNotifications(prev => [{...data, read: false, id: Date.now() + 1}, ...prev]);
-      setUnreadCount(prev => prev + 1);
+      setNotifications(prev => [{...data, read: false, id: Date.now() + Math.random() + 1}, ...prev]);
     });
 
     return () => socket.disconnect();
   }, []);
 
+  // Derived state to ensure unreadCount is always perfectly synchronized with notifications list
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({...n, read: true})));
-    setUnreadCount(0);
+  };
+
+  const markAsRead = (id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? {...n, read: true} : n));
   };
 
   const removeNotification = (id) => {
@@ -39,11 +42,10 @@ export function NotificationProvider({ children }) {
 
   const addNotification = (data) => {
     setNotifications(prev => [{ ...data, read: false, id: data.id || (Date.now() + Math.random()) }, ...prev]);
-    setUnreadCount(prev => prev + 1);
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, unreadCount, markAllAsRead, removeNotification, addNotification }}>
+    <NotificationContext.Provider value={{ notifications, unreadCount, markAllAsRead, markAsRead, removeNotification, addNotification }}>
       {children}
     </NotificationContext.Provider>
   );
